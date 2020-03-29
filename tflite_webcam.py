@@ -1,11 +1,12 @@
 import os
 import argparse
-import cv2
+import cv2.cv2 as cv2
 import numpy as np
 import sys
 import time
 from threading import Thread
 import importlib.util
+from datetime import datetime
 
 
 class VideoStream:
@@ -48,6 +49,17 @@ class VideoStream:
     def stop(self):
         # Indicate that the camera and thread should be stopped
         self.stopped = True
+
+
+global frame_counter
+frame_counter = 0
+
+
+def capture_samples(frame):
+    frame_counter += 1
+
+    if frame_counter % 40:
+        cv2.imwrite("frame-.jpg" % datetime.now().strftime('%Y%m%d-%H%M%S'), frame)
 
 
 # Define and parse input arguments
@@ -94,7 +106,7 @@ else:
 # If using Edge TPU, assign filename for Edge TPU model
 if use_TPU:
     # If user has specified the name of the .tflite file, use that name, otherwise use default 'edgetpu.tflite'
-    if (GRAPH_NAME == 'detect.tflite'):
+    if GRAPH_NAME == 'detect.tflite':
         GRAPH_NAME = 'edgetpu.tflite'
 
     # Get path to current working directory
@@ -143,7 +155,7 @@ frame_rate_calc = 1
 freq = cv2.getTickFrequency()
 
 # Initialize video stream
-videostream = VideoStream(resolution=(imW, imH), framerate=30).start()
+videostream = VideoStream(resolution=(imW, imH)).start()
 time.sleep(1)
 
 # for frame1 in camera.capture_continuous(rawCapture, format="bgr",use_video_port=True):
@@ -209,6 +221,8 @@ while True:
     t2 = cv2.getTickCount()
     time1 = (t2 - t1) / freq
     frame_rate_calc = 1 / time1
+
+    capture_samples(frame1)
 
     # Press 'q' to quit
     if cv2.waitKey(1) == ord('q'):
