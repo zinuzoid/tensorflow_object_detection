@@ -58,7 +58,7 @@ def capture_samples(frame):
     global frame_counter
     frame_counter += 1
 
-    if frame_counter % 400 == 0:
+    if frame_counter % 10000 == 0:
         cv2.imwrite("samples/frame-%s.jpg" % datetime.now().strftime('%Y%m%d-%H%M%S'), frame)
 
 
