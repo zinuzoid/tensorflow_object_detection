@@ -1,7 +1,6 @@
 import os
 import argparse
-# import cv2.cv2 as cv2
-import cv2
+import cv2.cv2 as cv2
 import numpy as np
 import sys
 import time
@@ -57,10 +56,11 @@ frame_counter = 0
 
 
 def capture_samples(frame):
+    global frame_counter
     frame_counter += 1
 
-    if frame_counter % 40:
-        cv2.imwrite("frame-.jpg" % datetime.now().strftime('%Y%m%d-%H%M%S'), frame)
+    if frame_counter % 40 == 0:
+        cv2.imwrite("samples/frame-%s.jpg" % datetime.now().strftime('%Y%m%d-%H%M%S'), frame)
 
 
 # Define and parse input arguments
