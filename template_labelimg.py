@@ -1,6 +1,6 @@
 import os
 
-TRAIN_DIR = '/Users/jimjm/jim/workspace/tensorflow/training/images/test'
+TRAIN_DIR = '/Users/jimjm/jim/workspace/tensorflow/training/images/new'
 ANNOTATIONS_DIR = TRAIN_DIR
 
 
@@ -29,8 +29,7 @@ def main():
     last_image_index = images.index(last_image_filename)
     next_image_filename = images[last_image_index + 1]
 
-    next_annotation_filename = get_filename(next_image_filename) + '.xml' \
- \
+    next_annotation_filename = get_filename(next_image_filename) + '.xml'
     with open(ANNOTATIONS_DIR + '/' + last_annotation) as f:
         lines = f.readlines()
         if len(lines) == 0:
