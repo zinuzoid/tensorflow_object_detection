@@ -163,10 +163,10 @@ def get_color(name):
     if name == 'car':
         return 10, 255, 0
     elif name == 'person':
-        return 255, 10, 0
-    elif name == 'cycle':
         return 0, 10, 255
-    return 255, 127, 0
+    elif name == 'cycle':
+        return 255, 10, 0
+    return 0, 127, 255
 
 
 while True:
@@ -212,11 +212,11 @@ while True:
 
             color = get_color(object_name)
 
-            cv2.rectangle(overlay, (xmin, ymin), (xmax, ymax), color, 1)
+            cv2.rectangle(overlay, (xmin, ymin), (xmax, ymax), color, 2)
 
             # Draw label
-            label = '%s: %d%%' % (object_name, int(scores[i] * 100))  # Example: 'person: 72%'
-            labelSize, baseLine = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)  # Get font size
+            label = '%d' % (int(scores[i] * 100))  # Example: 'person: 72%'
+            labelSize, baseLine = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 1)  # Get font size
             label_ymin = max(ymin, labelSize[1] + 10)  # Make sure not to draw label too close to top of window
             cv2.rectangle(overlay, (xmin, label_ymin - labelSize[1] - 10),
                           (xmin + labelSize[0], label_ymin + baseLine - 10), (255, 255, 255),
@@ -225,13 +225,13 @@ while True:
                         2)  # Draw label text
 
     # Draw framerate in corner of frame
-    cv2.putText(overlay, 'FPS: {0:.2f}'.format(frame_rate_calc), (30, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 0),
+    cv2.putText(frame, '{0:.2f}'.format(frame_rate_calc), (30, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (52, 235, 52),
                 2,
                 cv2.LINE_AA)
 
     # All the results have been drawn on the frame, so it's time to display it.
-    alpha = 0.5
-    frame = cv2.addWeighted(overlay, alpha, frame, 1 - alpha)
+    alpha = 0.4
+    frame = cv2.addWeighted(overlay, alpha, frame, 1 - alpha, 0)
     cv2.imshow('Object detector', frame)
 
     # Calculate framerate
