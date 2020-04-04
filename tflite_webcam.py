@@ -198,10 +198,12 @@ while True:
     # num = interpreter.get_tensor(output_details[3]['index'])[0]  # Total number of detected objects (inaccurate and not needed)
 
     overlay = frame.copy()
+    object_name_list = {'car': 0, 'person': 0, 'cycle': 0}
     # Loop over all detections and draw detection box if confidence is above minimum threshold
     for i in range(len(scores)):
         if (scores[i] > min_conf_threshold) and (scores[i] <= 1.0):
             object_name = labels[int(classes[i])]  # Look up object name from "labels" array using class index
+            object_name_list[object_name] += 1
 
             # Get bounding box coordinates and draw box
             # Interpreter can return coordinates that are outside of image dimensions, need to force them to be within image using max() and min()
@@ -224,14 +226,26 @@ while True:
             cv2.putText(overlay, label, (xmin, label_ymin - 7), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0),
                         2)  # Draw label text
 
+    # All the results have been drawn on the frame, so it's time to display it.
+    alpha = 0.4
+    frame = cv2.addWeighted(overlay, alpha, frame, 1 - alpha, 0)
+
     # Draw framerate in corner of frame
     cv2.putText(frame, '{0:.2f}'.format(frame_rate_calc), (30, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (52, 235, 52),
                 2,
                 cv2.LINE_AA)
+    cv2.putText(frame, 'car: %d' % object_name_list['car'], (30, 50 * 2), cv2.FONT_HERSHEY_SIMPLEX, 1, get_color('car'),
+                2,
+                cv2.LINE_AA)
+    cv2.putText(frame, 'person: %d' % object_name_list['person'], (30, 50 * 3), cv2.FONT_HERSHEY_SIMPLEX, 1,
+                get_color('person'),
+                2,
+                cv2.LINE_AA)
+    cv2.putText(frame, 'cycle: %d' % object_name_list['cycle'], (30, 50 * 4), cv2.FONT_HERSHEY_SIMPLEX, 1,
+                get_color('cycle'),
+                2,
+                cv2.LINE_AA)
 
-    # All the results have been drawn on the frame, so it's time to display it.
-    alpha = 0.4
-    frame = cv2.addWeighted(overlay, alpha, frame, 1 - alpha, 0)
     cv2.imshow('Object detector', frame)
 
     # Calculate framerate
