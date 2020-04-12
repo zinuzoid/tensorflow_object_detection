@@ -51,17 +51,6 @@ class VideoStream:
         self.stopped = True
 
 
-frame_counter = 0
-
-
-def capture_samples(frame):
-    global frame_counter
-    frame_counter += 1
-
-    if frame_counter % 10000 == 0:
-        cv2.imwrite("samples/frame-%s.jpg" % datetime.now().strftime('%Y%m%d-%H%M%S'), frame)
-
-
 # Define and parse input arguments
 parser = argparse.ArgumentParser()
 parser.add_argument('--modeldir', help='Folder the .tflite file is located in',
@@ -77,6 +66,8 @@ parser.add_argument('--resolution',
                     default='1280x720')
 parser.add_argument('--edgetpu', help='Use Coral Edge TPU Accelerator to speed up detection',
                     action='store_true')
+parser.add_argument('--capture_threshold', help='millisecond before capture',
+                    default=3600000)
 
 args = parser.parse_args()
 
@@ -87,6 +78,22 @@ min_conf_threshold = float(args.threshold)
 resW, resH = args.resolution.split('x')
 imW, imH = int(resW), int(resH)
 use_TPU = args.edgetpu
+capture_threshold = args.capture_threshold
+
+tick = cv2.getTickCount()
+
+
+def capture_samples():
+    global tick
+    tick2 = cv2.getTickCount()
+    t = (tick2 - tick) / freq * 1000
+
+    if t > capture_threshold:
+        filename = "samples/frame-%s.jpg" % datetime.now().strftime('%Y%m%d-%H%M%S')
+        cv2.imwrite(filename, frame)
+        tick = tick2
+        print(filename)
+
 
 # Import TensorFlow libraries
 # If tflite_runtime is installed, import interpreter from tflite_runtime, else import from regular tensorflow
@@ -253,7 +260,7 @@ while True:
     time1 = (t2 - t1) / freq
     frame_rate_calc = 1 / time1
 
-    capture_samples(frame1)
+    capture_samples()
 
     # Press 'q' to quit
     if cv2.waitKey(1) == ord('q'):
