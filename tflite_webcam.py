@@ -164,6 +164,7 @@ def get_color(name):
 
 
 tick = cv2.getTickCount()
+out_file = open("out/%s.csv" % datetime.now().strftime('%Y%m%d-%H%M%S'), 'a')
 
 
 def capture_samples(frame):
@@ -201,7 +202,6 @@ while True:
     input_data = np.expand_dims(frame_resized, axis=0)
 
     capture_samples(frame)
-    out_file = open("out/%s.csv" % datetime.now().strftime('%Y%m%d-%H%M%S'), 'a')
 
     # Normalize pixel values if using a floating model (i.e. if model is non-quantized)
     if floating_model:
