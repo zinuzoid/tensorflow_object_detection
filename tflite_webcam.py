@@ -78,7 +78,7 @@ min_conf_threshold = float(args.threshold)
 resW, resH = args.resolution.split('x')
 imW, imH = int(resW), int(resH)
 use_TPU = args.edgetpu
-capture_threshold = args.capture_threshold
+capture_threshold = int(args.capture_threshold)
 
 tick = cv2.getTickCount()
 
