@@ -231,7 +231,7 @@ while True:
     frame = cv2.addWeighted(overlay, alpha, frame, 1 - alpha, 0)
 
     # Draw framerate in corner of frame
-    cv2.putText(frame, '{0:.2f}'.format(frame_rate_calc), (30, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (52, 235, 52),
+    cv2.putText(frame, '{0:.2f} / {1:.0f}'.format(frame_rate_calc, 1.0 / frame_rate_calc * 1000), (30, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (52, 235, 52),
                 2,
                 cv2.LINE_AA)
     cv2.putText(frame, 'car: %d' % object_name_list['car'], (30, 50 * 2), cv2.FONT_HERSHEY_SIMPLEX, 1, get_color('car'),
