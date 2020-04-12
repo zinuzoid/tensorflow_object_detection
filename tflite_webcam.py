@@ -83,7 +83,7 @@ capture_threshold = int(args.capture_threshold)
 tick = cv2.getTickCount()
 
 
-def capture_samples():
+def capture_samples(frame):
     global tick
     tick2 = cv2.getTickCount()
     t = (tick2 - tick) / freq * 1000
@@ -190,6 +190,8 @@ while True:
     frame_resized = cv2.resize(frame_rgb, (width, height))
     input_data = np.expand_dims(frame_resized, axis=0)
 
+    capture_samples(frame)
+
     # Normalize pixel values if using a floating model (i.e. if model is non-quantized)
     if floating_model:
         input_data = (np.float32(input_data) - input_mean) / input_std
@@ -259,8 +261,6 @@ while True:
     t2 = cv2.getTickCount()
     time1 = (t2 - t1) / freq
     frame_rate_calc = 1 / time1
-
-    capture_samples()
 
     # Press 'q' to quit
     if cv2.waitKey(1) == ord('q'):
