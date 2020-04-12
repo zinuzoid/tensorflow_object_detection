@@ -7,6 +7,7 @@ import time
 from threading import Thread
 import importlib.util
 from datetime import datetime
+import csv
 
 
 class VideoStream:
@@ -79,20 +80,6 @@ resW, resH = args.resolution.split('x')
 imW, imH = int(resW), int(resH)
 use_TPU = args.edgetpu
 capture_threshold = int(args.capture_threshold)
-
-tick = cv2.getTickCount()
-
-
-def capture_samples(frame):
-    global tick
-    tick2 = cv2.getTickCount()
-    t = (tick2 - tick) / freq * 1000
-
-    if t > capture_threshold:
-        filename = "samples/frame-%s.jpg" % datetime.now().strftime('%Y%m%d-%H%M%S')
-        cv2.imwrite(filename, frame)
-        tick = tick2
-        print(filename)
 
 
 # Import TensorFlow libraries
@@ -176,8 +163,31 @@ def get_color(name):
     return 0, 127, 255
 
 
-while True:
+tick = cv2.getTickCount()
 
+
+def capture_samples(frame):
+    global tick
+    tick2 = cv2.getTickCount()
+    t = (tick2 - tick) / freq * 1000
+
+    if t > capture_threshold:
+        filename = "samples/frame-%s.jpg" % datetime.now().strftime('%Y%m%d-%H%M%S')
+        cv2.imwrite(filename, frame)
+        tick = tick2
+        print(filename)
+
+
+def write_data(file, object_name_list):
+    car = object_name_list['car']
+    person = object_name_list['person']
+    cycle = object_name_list['cycle']
+    writer = csv.writer(file, delimiter=',')
+    epoch = int(time.time() * 1000)
+    writer.writerow([epoch, car, person, cycle])
+
+
+while True:
     # Start timer (for calculating frame rate)
     t1 = cv2.getTickCount()
 
@@ -191,6 +201,7 @@ while True:
     input_data = np.expand_dims(frame_resized, axis=0)
 
     capture_samples(frame)
+    out_file = open("out/%s.csv" % datetime.now().strftime('%Y%m%d-%H%M%S'), 'a')
 
     # Normalize pixel values if using a floating model (i.e. if model is non-quantized)
     if floating_model:
@@ -257,6 +268,8 @@ while True:
 
     cv2.imshow('Object detector', frame)
 
+    write_data(out_file, object_name_list)
+
     # Calculate framerate
     t2 = cv2.getTickCount()
     time1 = (t2 - t1) / freq
@@ -264,6 +277,7 @@ while True:
 
     # Press 'q' to quit
     if cv2.waitKey(1) == ord('q'):
+        out_file.close()
         break
 
 # Clean up
