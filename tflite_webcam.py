@@ -173,10 +173,14 @@ def capture_samples(frame):
     t = (tick2 - tick) / freq * 1000
 
     if t > capture_threshold:
-        filename = "samples/frame-%s.jpg" % datetime.now().strftime('%Y%m%d-%H%M%S')
-        cv2.imwrite(filename, frame)
         tick = tick2
-        print(filename)
+        capture(frame)
+
+
+def capture(frame):
+    filename = "samples/frame-%s.jpg" % datetime.now().strftime('%Y%m%d-%H%M%S')
+    cv2.imwrite(filename, frame)
+    print(filename)
 
 
 def write_data(file, object_name_list):
