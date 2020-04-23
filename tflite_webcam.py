@@ -216,7 +216,7 @@ while True:
         out_file.close()
         break
     elif key == ord('s'):
-        capture_samples(frame)
+        capture(frame)
 
     # Normalize pixel values if using a floating model (i.e. if model is non-quantized)
     if floating_model:
