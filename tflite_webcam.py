@@ -193,7 +193,12 @@ while True:
     t1 = cv2.getTickCount()
 
     # Grab frame from video stream
-    frame1 = videostream.read()
+    try:
+        frame1 = videostream.read()
+    except Exception as e:
+        out_file.flush()
+        out_file.close()
+        raise e
 
     # Acquire frame and resize to expected shape [1xHxWx3]
     frame = frame1.copy()
@@ -201,7 +206,13 @@ while True:
     frame_resized = cv2.resize(frame_rgb, (width, height))
     input_data = np.expand_dims(frame_resized, axis=0)
 
-    capture_samples(frame)
+    # Press 'q' to quit
+    key = cv2.waitKey(1)
+    if key == ord('q'):
+        out_file.close()
+        break
+    elif key == ord('s'):
+        capture_samples(frame)
 
     # Normalize pixel values if using a floating model (i.e. if model is non-quantized)
     if floating_model:
@@ -275,10 +286,6 @@ while True:
     time1 = (t2 - t1) / freq
     frame_rate_calc = 1 / time1
 
-    # Press 'q' to quit
-    if cv2.waitKey(1) == ord('q'):
-        out_file.close()
-        break
 
 # Clean up
 cv2.destroyAllWindows()
